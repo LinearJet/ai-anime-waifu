@@ -1,4 +1,3 @@
-
 // components/VrmViewer.tsx
 
 import { VRM, VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
@@ -193,6 +192,21 @@ setCurrentVrm(vrm);
     }
   }, [currentVrm]);
 
+  // Load default idle animation after VRM loads
+  useEffect(() => {
+    if (currentVrm && mixer.current) {
+      const loadDefaultAnimation = async () => {
+        try {
+          await handleAnimation('/animations/idle.fbx');
+        } catch (error) {
+          console.error('Failed to load default idle animation:', error);
+        }
+      };
+      
+      loadDefaultAnimation();
+    }
+  }, [currentVrm, handleAnimation]);
+
   // Handle expression value change
   const handleExpressionChange = useCallback((name: string, value: number) => {
     if (!currentVrm) return;
@@ -231,6 +245,36 @@ setCurrentVrm(vrm);
     setExpressionValues(newValues);
   }, [currentVrm, availableExpressions]);
   
+  // Unified handler for expressions, animations, and lip sync
+  const handleAnimationControl = useCallback((
+    type: 'expression' | 'animation' | 'viseme',
+    name: string,
+    value: number
+  ) => {
+    if (!currentVrm) return;
+    
+    if (type === 'expression') {
+      // Apply facial expression with intensity
+      applyExpressionPreset(name as keyof typeof EXPRESSION_PRESETS);
+      // Scale by intensity
+      Object.keys(EXPRESSION_PRESETS[name as keyof typeof EXPRESSION_PRESETS] || {}).forEach(expr => {
+        if (availableExpressions.includes(expr)) {
+          const presetValue = (EXPRESSION_PRESETS[name as keyof typeof EXPRESSION_PRESETS] as any)[expr];
+          currentVrm.expressionManager.setValue(expr, presetValue * value);
+        }
+      });
+    } else if (type === 'animation') {
+      // Trigger body animation
+      const animationPath = `/animations/${name}.fbx`;
+      handleAnimation(animationPath);
+    } else if (type === 'viseme') {
+      // Apply lip sync viseme
+      if (availableExpressions.includes(name)) {
+        currentVrm.expressionManager.setValue(name, value);
+      }
+    }
+  }, [currentVrm, availableExpressions, handleAnimation, applyExpressionPreset]);
+
     const toggleFaceZoom = useCallback(() => {
     setIsZoomedToFace(!isZoomedToFace);
   }, [isZoomedToFace]);
@@ -671,11 +715,14 @@ setCurrentVrm(vrm);
         onChange={handleFileChange} 
         style={{ display: 'none' }} 
       />
-      <ChatBox onExpressionChange={applyExpressionPreset} />
+      <ChatBox onExpressionChange={handleAnimationControl} />
 
       {/* 3D Canvas */}
       <Canvas 
-        camera={{ position: isZoomedToFace ? [0.5, 1.4, 2.2] : [0, 1.5, 4], fov: 50 }}
+        camera={{ 
+          position: isZoomedToFace ? [0.5, 1.4, 2.2] : [0.5, 1.2, 2.5], // Changed from [0, 1.5, 4]
+          fov: 50 
+        }}
          shadows
         gl={{ 
           antialias: true,
@@ -686,9 +733,9 @@ setCurrentVrm(vrm);
         <ApartmentScene />
         {currentVrm && <VrmModel vrm={currentVrm} />}
         <OrbitControls 
-           target={isZoomedToFace ? [0.5, 1.4, 1.5] : [0, 1, 0]}
-           maxDistance={isZoomedToFace ? 2 : 8}
-           minDistance={isZoomedToFace ? 0.5 : 1}
+           target={isZoomedToFace ? [0.5, 1.4, 1.5] : [0.5, 1.0, 1.5]} // Changed from [0, 1, 0]
+           maxDistance={isZoomedToFace ? 2 : 4} // Changed from 8
+           minDistance={isZoomedToFace ? 0.5 : 1.5} // Changed to prevent getting too close
            maxPolarAngle={Math.PI / 1.8}
            enablePan={!isZoomedToFace}
          />

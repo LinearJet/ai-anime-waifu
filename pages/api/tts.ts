@@ -1,6 +1,3 @@
-// pages/api/tts.ts
-import type { NextApiRequest, NextApiResponse } from 'next';
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -17,8 +14,24 @@ export default async function handler(
     }
 
     const voiceId = 'lhTvHflPVOqgSWyuWQry';
-    const emotionTag = emotion || '[neutral]';
-    const textWithEmotion = `${emotionTag} ${text}`;
+    
+    // Map emotions to voice settings instead of tags
+    const emotionSettings: Record<string, { stability: number; similarity_boost: number; style: number }> = {
+      '[neutral]': { stability: 0.5, similarity_boost: 0.75, style: 0.0 },
+      '[happy]': { stability: 0.4, similarity_boost: 0.8, style: 0.6 },
+      '[excited]': { stability: 0.3, similarity_boost: 0.85, style: 0.8 },
+      '[sad]': { stability: 0.6, similarity_boost: 0.7, style: 0.3 },
+      '[angry]': { stability: 0.3, similarity_boost: 0.9, style: 0.7 },
+      '[nervous]': { stability: 0.4, similarity_boost: 0.7, style: 0.5 },
+      '[curious]': { stability: 0.45, similarity_boost: 0.75, style: 0.4 },
+      '[mischievously]': { stability: 0.35, similarity_boost: 0.8, style: 0.7 },
+      '[tired]': { stability: 0.7, similarity_boost: 0.6, style: 0.2 },
+      '[sorrowful]': { stability: 0.65, similarity_boost: 0.7, style: 0.4 },
+      '[regretful]': { stability: 0.6, similarity_boost: 0.7, style: 0.3 },
+      '[hesitant]': { stability: 0.55, similarity_boost: 0.7, style: 0.3 },
+    };
+
+    const settings = emotionSettings[emotion || '[neutral]'] || emotionSettings['[neutral]'];
 
     const response = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
@@ -30,12 +43,12 @@ export default async function handler(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          text: textWithEmotion,
+          text: text, // NO emotion tag in the text
           model_id: 'eleven_turbo_v2_5',
           voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.75,
-            style: 0.0,
+            stability: settings.stability,
+            similarity_boost: settings.similarity_boost,
+            style: settings.style,
             use_speaker_boost: true
           },
         }),
