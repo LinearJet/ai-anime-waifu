@@ -1,0 +1,17 @@
+/* styles/Home.module.css */
+
+.container {
+  padding: 0;
+  margin: 0;
+}
+
+.main {
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
