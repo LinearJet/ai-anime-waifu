@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { generateLipSyncData } from '../lib/lipSync';
 import { classifyByRules } from '../lib/animationClassifier';
+import { Camera, Mic, Volume2, Settings, Smile, Send, Square } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -252,16 +253,19 @@ Keep responses concise (2-3 sentences max), witty, and engaging. Add personality
                 style={{
                   maxWidth: '80%',
                   padding: '12px 16px',
-                  borderRadius: '20px',
+                  borderRadius: '12px',
                   background: msg.role === 'user' 
-                    ? 'rgba(0, 122, 255, 0.9)'
-                    : 'rgba(60, 60, 67, 0.9)',
-                  backdropFilter: 'blur(20px)',
-                  color: 'white',
-                  fontSize: '16px',
-                  lineHeight: '1.4',
+                    ? 'hsl(222.2 47.4% 11.2%)'
+                    : 'hsl(240 3.7% 15.9%)',
+                  border: '1px solid',
+                  borderColor: msg.role === 'user'
+                    ? 'hsl(217.2 32.6% 17.5%)'
+                    : 'hsl(240 3.7% 15.9%)',
+                  color: 'hsl(210 40% 98%)',
+                  fontSize: '14px',
+                  lineHeight: '1.5',
                   wordWrap: 'break-word',
-                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)',
                   pointerEvents: 'auto',
                 }}
               >
@@ -278,15 +282,15 @@ Keep responses concise (2-3 sentences max), witty, and engaging. Add personality
             }}>
               <div style={{
                 padding: '12px 16px',
-                borderRadius: '20px',
-                background: 'rgba(60, 60, 67, 0.9)',
-                backdropFilter: 'blur(20px)',
-                color: 'white',
-                fontSize: '16px',
-                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
+                borderRadius: '12px',
+                background: 'hsl(240 3.7% 15.9%)',
+                border: '1px solid hsl(240 3.7% 15.9%)',
+                color: 'hsl(210 40% 98%)',
+                fontSize: '14px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)',
               }}>
                 <span style={{ animation: 'pulse 1.5s ease-in-out infinite' }}>
-                  ●●●
+                  •••
                 </span>
               </div>
             </div>
@@ -294,7 +298,7 @@ Keep responses concise (2-3 sentences max), witty, and engaging. Add personality
         </div>
       )}
 
-      {/* Bottom Toolbar - Grok Style */}
+      {/* Bottom Toolbar */}
       <div style={{
         width: '100%',
         padding: '0 16px 20px 16px',
@@ -304,163 +308,124 @@ Keep responses concise (2-3 sentences max), witty, and engaging. Add personality
         alignItems: 'center',
         gap: '12px',
       }}>
-        {/* Action Buttons Row */}
+        {/* Action Buttons Row - Full Width with 3 Buttons */}
         <div style={{
+          width: '100%',
+          maxWidth: '800px',
           display: 'flex',
-          gap: '12px',
           alignItems: 'center',
-          justifyContent: 'center',
+          gap: '8px',
         }}>
-          {/* Camera Button */}
+          {/* Audio Button - Left Pill */}
           <button
             style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '50%',
-              background: 'rgba(60, 60, 67, 0.6)',
+              width: '52px',
+              height: '52px',
+              borderRadius: '26px',
+              background: 'rgba(30, 30, 35, 0.8)',
               backdropFilter: 'blur(20px)',
-              border: 'none',
-              color: 'white',
-              fontSize: '20px',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: 'hsl(210 40% 98%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
               transition: 'all 0.2s',
+              flexShrink: 0,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(60, 60, 67, 0.8)';
+              e.currentTarget.style.background = 'rgba(40, 40, 45, 0.9)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(60, 60, 67, 0.6)';
+              e.currentTarget.style.background = 'rgba(30, 30, 35, 0.8)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
             }}
           >
-            📹
+            <Volume2 size={20} />
           </button>
 
-          {/* Microphone Button */}
+          {/* Camera Button - Center Squircle (Full Width) */}
           <button
             style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '50%',
-              background: 'rgba(60, 60, 67, 0.6)',
+              flex: 1,
+              height: '52px',
+              borderRadius: '16px',
+              background: 'rgba(30, 30, 35, 0.8)',
               backdropFilter: 'blur(20px)',
-              border: 'none',
-              color: 'white',
-              fontSize: '20px',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: 'hsl(210 40% 98%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
               transition: 'all 0.2s',
+              gap: '8px',
+              fontSize: '14px',
+              fontWeight: '500',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(60, 60, 67, 0.8)';
+              e.currentTarget.style.background = 'rgba(40, 40, 45, 0.9)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(60, 60, 67, 0.6)';
+              e.currentTarget.style.background = 'rgba(30, 30, 35, 0.8)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
             }}
           >
-            🔇
+            <Camera size={20} />
+            <span>Camera</span>
           </button>
 
-          {/* Voice Input Button */}
+          {/* Microphone Button - Right Pill */}
           <button
             style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '50%',
-              background: 'rgba(60, 60, 67, 0.6)',
+              width: '52px',
+              height: '52px',
+              borderRadius: '26px',
+              background: 'rgba(30, 30, 35, 0.8)',
               backdropFilter: 'blur(20px)',
-              border: 'none',
-              color: 'white',
-              fontSize: '20px',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: 'hsl(210 40% 98%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
               transition: 'all 0.2s',
+              flexShrink: 0,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(60, 60, 67, 0.8)';
+              e.currentTarget.style.background = 'rgba(40, 40, 45, 0.9)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(60, 60, 67, 0.6)';
+              e.currentTarget.style.background = 'rgba(30, 30, 35, 0.8)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
             }}
           >
-            🎤
-          </button>
-
-          {/* Settings Button */}
-          <button
-            style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '50%',
-              background: 'rgba(60, 60, 67, 0.6)',
-              backdropFilter: 'blur(20px)',
-              border: 'none',
-              color: 'white',
-              fontSize: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(60, 60, 67, 0.8)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(60, 60, 67, 0.6)';
-            }}
-          >
-            ⚙️
-          </button>
-
-          {/* Emoji/More Button */}
-          <button
-            style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '50%',
-              background: 'rgba(60, 60, 67, 0.6)',
-              backdropFilter: 'blur(20px)',
-              border: 'none',
-              color: 'white',
-              fontSize: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(60, 60, 67, 0.8)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(60, 60, 67, 0.6)';
-            }}
-          >
-            😊
+            <Mic size={20} />
           </button>
         </div>
 
-        {/* Input Bar */}
+        {/* Input Bar - Wider */}
         <div style={{
           width: '100%',
-          maxWidth: '600px',
+          maxWidth: '800px',
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
         }}>
           <div style={{
             flex: 1,
-            background: 'rgba(60, 60, 67, 0.6)',
+            background: 'rgba(30, 30, 35, 0.8)',
             backdropFilter: 'blur(20px)',
-            borderRadius: '25px',
-            padding: '12px 20px',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: '16px',
+            padding: '12px 18px',
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
@@ -476,8 +441,8 @@ Keep responses concise (2-3 sentences max), witty, and engaging. Add personality
                 flex: 1,
                 background: 'transparent',
                 border: 'none',
-                color: 'white',
-                fontSize: '17px',
+                color: 'hsl(210 40% 98%)',
+                fontSize: '15px',
                 outline: 'none',
                 fontWeight: '400',
               }}
@@ -489,13 +454,14 @@ Keep responses concise (2-3 sentences max), witty, and engaging. Add personality
             <button
               onClick={() => {/* Add stop functionality if needed */}}
               style={{
-                background: 'rgba(255, 59, 48, 0.9)',
+                background: 'rgba(239, 68, 68, 0.9)',
                 backdropFilter: 'blur(20px)',
-                borderRadius: '20px',
-                padding: '12px 20px',
-                border: 'none',
-                color: 'white',
-                fontSize: '15px',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderRadius: '16px',
+                padding: '12px 18px',
+                border: '1px solid rgba(239, 68, 68, 0.5)',
+                color: 'hsl(210 40% 98%)',
+                fontSize: '14px',
                 fontWeight: '600',
                 cursor: 'pointer',
                 display: 'flex',
@@ -503,31 +469,52 @@ Keep responses concise (2-3 sentences max), witty, and engaging. Add personality
                 gap: '6px',
                 transition: 'all 0.2s',
               }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(220, 38, 38, 0.95)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.9)';
+              }}
             >
-              <span style={{ fontSize: '16px' }}>■</span> Stop
+              <Square size={14} fill="currentColor" /> Stop
             </button>
           ) : (
             <button
               onClick={handleSend}
               disabled={!input.trim()}
               style={{
-                width: '44px',
-                height: '44px',
-                borderRadius: '50%',
+                width: '48px',
+                height: '48px',
+                borderRadius: '16px',
                 background: input.trim() 
-                  ? 'rgba(0, 122, 255, 0.9)' 
-                  : 'rgba(60, 60, 67, 0.3)',
-                border: 'none',
-                color: 'white',
-                fontSize: '20px',
+                  ? 'rgba(255, 255, 255, 0.95)' 
+                  : 'rgba(30, 30, 35, 0.8)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: input.trim()
+                  ? '1px solid rgba(255, 255, 255, 0.3)'
+                  : '1px solid rgba(255, 255, 255, 0.1)',
+                color: input.trim() 
+                  ? 'hsl(222.2 47.4% 11.2%)'
+                  : 'hsl(240 5% 64.9%)',
                 cursor: input.trim() ? 'pointer' : 'not-allowed',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 transition: 'all 0.2s',
               }}
+              onMouseEnter={(e) => {
+                if (input.trim()) {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 1)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (input.trim()) {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
+                }
+              }}
             >
-              ↑
+              <Send size={18} />
             </button>
           )}
         </div>
@@ -545,7 +532,7 @@ Keep responses concise (2-3 sentences max), witty, and engaging. Add personality
         }
 
         input::placeholder {
-          color: rgba(255, 255, 255, 0.5);
+          color: hsl(240 5% 64.9%);
         }
       `}</style>
     </div>

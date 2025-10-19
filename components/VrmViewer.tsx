@@ -14,6 +14,18 @@ import {
   setupApartmentBackground 
 } from '../lib/apartmentEnvironment';
 import { ChatBox } from './ChatBox';
+import { 
+  Settings, 
+  Upload, 
+  Film, 
+  X, 
+  ZoomIn,
+  Smile,
+  Frown,
+  Meh,
+  AlertCircle,
+  Loader2
+} from 'lucide-react';
 
 // VRM model component
 const VrmModel = ({ vrm }: { vrm: VRM }) => {
@@ -98,7 +110,8 @@ export const VrmViewer = ({
   const [expressionValues, setExpressionValues] = useState<Record<string, number>>({});
   const [showExpressionPanel, setShowExpressionPanel] = useState(false);
   const [showApartment, setShowApartment] = useState(true);
- const [isZoomedToFace, setIsZoomedToFace] = useState(false);
+  const [isZoomedToFace, setIsZoomedToFace] = useState(false);
+  const [showControlPanel, setShowControlPanel] = useState(false);
  
   const mixer = useRef<THREE.AnimationMixer | null>(null);
   const currentAction = useRef<THREE.AnimationAction | null>(null);
@@ -124,12 +137,12 @@ export const VrmViewer = ({
           return;
         }
         VRMUtils.rotateVRM0(vrm);
-vrm.scene.traverse((obj) => { obj.frustumCulled = false; });
+        vrm.scene.traverse((obj) => { obj.frustumCulled = false; });
 
-// Position VRM in front of table
-vrm.scene.position.set(0.5, 0, 1.5);  // Slightly right, in front of table
+        // Position VRM in front of table
+        vrm.scene.position.set(0.5, 0, 1.5);  // Slightly right, in front of table
 
-setCurrentVrm(vrm);
+        setCurrentVrm(vrm);
         mixer.current = new THREE.AnimationMixer(vrm.scene);
         
         // Get available expressions
@@ -275,7 +288,7 @@ setCurrentVrm(vrm);
     }
   }, [currentVrm, availableExpressions, handleAnimation, applyExpressionPreset]);
 
-    const toggleFaceZoom = useCallback(() => {
+  const toggleFaceZoom = useCallback(() => {
     setIsZoomedToFace(!isZoomedToFace);
   }, [isZoomedToFace]);
 
@@ -334,7 +347,7 @@ setCurrentVrm(vrm);
     <div ref={dropzoneRef} style={{ 
       width: '100vw', 
       height: '100vh', 
-      background: '#333', 
+      background: '#0a0a0a', 
       position: 'relative',
       overflow: 'hidden',
       margin: 0,
@@ -343,63 +356,59 @@ setCurrentVrm(vrm);
       {/* Collapsible Control Panel */}
       <div style={{ 
         position: 'absolute', 
-        top: 20, 
-        left: 20, 
+        top: '16px', 
+        left: '16px', 
         zIndex: 100,
-        fontFamily: 'sans-serif',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       }}>
-        {!showExpressionPanel ? (
-          // Collapsed state - single circular button
+        {!showControlPanel ? (
+          // Collapsed state - single button
           <button 
-            onClick={() => setShowExpressionPanel(true)}
+            onClick={() => setShowControlPanel(true)}
             style={{
-              background: 'rgba(0, 0, 0, 0.7)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '0',
-              borderRadius: '50%',
-              width: '56px',
-              height: '56px',
-              color: 'white',
-              fontSize: '24px',
+              background: 'hsl(240 3.7% 15.9%)',
+              border: '1px solid hsl(240 3.7% 15.9%)',
+              borderRadius: '12px',
+              width: '44px',
+              height: '44px',
+              color: 'hsl(210 40% 98%)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              transition: 'all 0.3s',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
-              isolation: 'isolate',
-              WebkitTapHighlightColor: 'transparent',
+              transition: 'all 0.2s',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3)',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'scale(1.1) rotate(90deg)';
+              e.currentTarget.style.background = 'hsl(240 3.7% 20%)';
+              e.currentTarget.style.borderColor = 'hsl(240 3.7% 25%)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
+              e.currentTarget.style.background = 'hsl(240 3.7% 15.9%)';
+              e.currentTarget.style.borderColor = 'hsl(240 3.7% 15.9%)';
             }}
           >
-            ⚙️
+            <Settings size={20} />
           </button>
         ) : (
           // Expanded state - all controls
           <div style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '10px',
+            gap: '8px',
             animation: 'slideIn 0.3s ease-out',
+            maxWidth: 'calc(100vw - 32px)',
           }}>
             {/* Close Button */}
             <button 
-              onClick={() => setShowExpressionPanel(false)}
+              onClick={() => setShowControlPanel(false)}
               style={{
-                background: 'rgba(244, 67, 54, 0.8)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '0',
-                borderRadius: '50px',
-                padding: '12px 24px',
-                color: 'white',
-                fontSize: '14px',
+                background: 'hsl(0 84.2% 60.2%)',
+                border: '1px solid hsl(0 84.2% 60.2%)',
+                borderRadius: '12px',
+                padding: '10px 16px',
+                color: 'hsl(210 40% 98%)',
+                fontSize: '13px',
                 fontWeight: '600',
                 cursor: 'pointer',
                 display: 'flex',
@@ -407,119 +416,109 @@ setCurrentVrm(vrm);
                 justifyContent: 'center',
                 gap: '8px',
                 transition: 'all 0.2s',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                isolation: 'isolate',
-                WebkitTapHighlightColor: 'transparent',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.background = 'hsl(0 84.2% 55%)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.background = 'hsl(0 84.2% 60.2%)';
               }}
             >
-              ✕ Close Menu
+              <X size={16} /> Close
             </button>
 
             {/* Load VRM Button */}
             <button 
               onClick={() => vrmInputRef.current?.click()}
               style={{
-                background: 'rgba(0, 0, 0, 0.7)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '0',
-                borderRadius: '50px',
-                padding: '12px 24px',
-                color: 'white',
-                fontSize: '14px',
+                background: 'hsl(240 3.7% 15.9%)',
+                border: '1px solid hsl(240 3.7% 15.9%)',
+                borderRadius: '12px',
+                padding: '10px 16px',
+                color: 'hsl(210 40% 98%)',
+                fontSize: '13px',
                 fontWeight: '500',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
                 transition: 'all 0.2s',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                isolation: 'isolate',
-                WebkitTapHighlightColor: 'transparent',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.9)';
-                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.background = 'hsl(240 3.7% 20%)';
+                e.currentTarget.style.borderColor = 'hsl(240 3.7% 25%)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.7)';
-                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.background = 'hsl(240 3.7% 15.9%)';
+                e.currentTarget.style.borderColor = 'hsl(240 3.7% 15.9%)';
               }}
             >
-              <span>📁</span> Load VRM
+              <Upload size={16} /> Load VRM
             </button>
 
             {/* Load Animation Button */}
             <button 
               onClick={() => fbxInputRef.current?.click()}
               style={{
-                background: 'rgba(0, 0, 0, 0.7)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '0',
-                borderRadius: '50px',
-                padding: '12px 24px',
-                color: 'white',
-                fontSize: '14px',
+                background: 'hsl(240 3.7% 15.9%)',
+                border: '1px solid hsl(240 3.7% 15.9%)',
+                borderRadius: '12px',
+                padding: '10px 16px',
+                color: 'hsl(210 40% 98%)',
+                fontSize: '13px',
                 fontWeight: '500',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
                 transition: 'all 0.2s',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                isolation: 'isolate',
-                WebkitTapHighlightColor: 'transparent',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.9)';
-                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.background = 'hsl(240 3.7% 20%)';
+                e.currentTarget.style.borderColor = 'hsl(240 3.7% 25%)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.7)';
-                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.background = 'hsl(240 3.7% 15.9%)';
+                e.currentTarget.style.borderColor = 'hsl(240 3.7% 15.9%)';
               }}
             >
-              <span>🎬</span> Load Animation
+              <Film size={16} /> Load Animation
             </button>
 
             {/* Preset Animations Dropdown */}
             {animationFiles.length > 0 && (
-              <select 
-                onChange={handlePresetAnimationChange} 
-                defaultValue=""
-                style={{
-                  background: 'rgba(0, 0, 0, 0.7)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: '0',
-                  borderRadius: '50px',
-                  padding: '12px 24px',
-                  color: 'white',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                  isolation: 'isolate',
-                  WebkitAppearance: 'none',
-                  appearance: 'none',
-                  outline: 'none',
-                }}
-              >
-                <option value="" disabled>🎭 Preset Animations</option>
-                {animationFiles.map((file) => (
-                  <option key={file} value={file} style={{ background: '#1a1a1a' }}>
-                    {file}
-                  </option>
-                ))}
-              </select>
+              <div style={{ position: 'relative' }}>
+                <select 
+                  onChange={handlePresetAnimationChange} 
+                  defaultValue=""
+                  style={{
+                    background: 'hsl(240 3.7% 15.9%)',
+                    border: '1px solid hsl(240 3.7% 15.9%)',
+                    borderRadius: '12px',
+                    padding: '10px 16px',
+                    paddingRight: '32px',
+                    color: 'hsl(210 40% 98%)',
+                    fontSize: '13px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
+                    width: '100%',
+                    appearance: 'none',
+                    outline: 'none',
+                  }}
+                >
+                  <option value="" disabled>Preset Animations</option>
+                  {animationFiles.map((file) => (
+                    <option key={file} value={file} style={{ background: 'hsl(240 3.7% 15.9%)' }}>
+                      {file}
+                    </option>
+                  ))}
+                </select>
+              </div>
             )}
 
             {/* Face Zoom Toggle */}
@@ -527,122 +526,217 @@ setCurrentVrm(vrm);
               onClick={toggleFaceZoom}
               style={{
                 background: isZoomedToFace 
-                  ? 'rgba(255, 152, 0, 0.8)' 
-                  : 'rgba(0, 0, 0, 0.7)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '0',
-                borderRadius: '50px',
-                padding: '12px 24px',
-                color: 'white',
-                fontSize: '14px',
+                  ? 'hsl(217.2 91.2% 59.8%)' 
+                  : 'hsl(240 3.7% 15.9%)',
+                border: '1px solid',
+                borderColor: isZoomedToFace
+                  ? 'hsl(217.2 91.2% 59.8%)'
+                  : 'hsl(240 3.7% 15.9%)',
+                borderRadius: '12px',
+                padding: '10px 16px',
+                color: 'hsl(210 40% 98%)',
+                fontSize: '13px',
                 fontWeight: '600',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
                 transition: 'all 0.2s',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                isolation: 'isolate',
-                WebkitTapHighlightColor: 'transparent',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
+                if (isZoomedToFace) {
+                  e.currentTarget.style.background = 'hsl(217.2 91.2% 55%)';
+                } else {
+                  e.currentTarget.style.background = 'hsl(240 3.7% 20%)';
+                  e.currentTarget.style.borderColor = 'hsl(240 3.7% 25%)';
+                }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
+                if (isZoomedToFace) {
+                  e.currentTarget.style.background = 'hsl(217.2 91.2% 59.8%)';
+                } else {
+                  e.currentTarget.style.background = 'hsl(240 3.7% 15.9%)';
+                  e.currentTarget.style.borderColor = 'hsl(240 3.7% 15.9%)';
+                }
               }}
             >
-              🔍 {isZoomedToFace ? 'Zoom Out' : 'Face Zoom'}
+              <ZoomIn size={16} /> {isZoomedToFace ? 'Zoom Out' : 'Face Zoom'}
             </button>
+
+            {/* Expression Panel Toggle */}
+            {currentVrm && (
+              <button 
+                onClick={() => setShowExpressionPanel(!showExpressionPanel)}
+                style={{
+                  background: showExpressionPanel 
+                    ? 'hsl(142.1 76.2% 36.3%)' 
+                    : 'hsl(240 3.7% 15.9%)',
+                  border: '1px solid',
+                  borderColor: showExpressionPanel
+                    ? 'hsl(142.1 76.2% 36.3%)'
+                    : 'hsl(240 3.7% 15.9%)',
+                  borderRadius: '12px',
+                  padding: '10px 16px',
+                  color: 'hsl(210 40% 98%)',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  transition: 'all 0.2s',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
+                }}
+                onMouseEnter={(e) => {
+                  if (showExpressionPanel) {
+                    e.currentTarget.style.background = 'hsl(142.1 76.2% 32%)';
+                  } else {
+                    e.currentTarget.style.background = 'hsl(240 3.7% 20%)';
+                    e.currentTarget.style.borderColor = 'hsl(240 3.7% 25%)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (showExpressionPanel) {
+                    e.currentTarget.style.background = 'hsl(142.1 76.2% 36.3%)';
+                  } else {
+                    e.currentTarget.style.background = 'hsl(240 3.7% 15.9%)';
+                    e.currentTarget.style.borderColor = 'hsl(240 3.7% 15.9%)';
+                  }
+                }}
+              >
+                <Smile size={16} /> {showExpressionPanel ? 'Hide' : 'Show'} Expressions
+              </button>
+            )}
 
             {/* Status Messages */}
             {isLoading && (
               <div style={{
-                background: 'rgba(33, 150, 243, 0.8)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '0',
-                borderRadius: '50px',
-                padding: '12px 24px',
-                color: 'white',
+                background: 'hsl(217.2 91.2% 59.8%)',
+                border: '1px solid hsl(217.2 91.2% 59.8%)',
+                borderRadius: '12px',
+                padding: '10px 16px',
+                color: 'hsl(210 40% 98%)',
                 fontSize: '12px',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                isolation: 'isolate',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
               }}>
-                ⏳ Loading...
+                <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Loading...
               </div>
             )}
             {error && (
               <div style={{
-                background: 'rgba(244, 67, 54, 0.8)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '0',
-                borderRadius: '50px',
-                padding: '12px 24px',
-                color: 'white',
-                fontSize: '12px',
-                maxWidth: '300px',
+                background: 'hsl(0 84.2% 60.2%)',
+                border: '1px solid hsl(0 84.2% 60.2%)',
+                borderRadius: '12px',
+                padding: '10px 16px',
+                color: 'hsl(210 40% 98%)',
+                fontSize: '11px',
+                maxWidth: '280px',
                 wordWrap: 'break-word',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                isolation: 'isolate',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '8px',
               }}>
-                ❌ {error}
+                <AlertCircle size={14} style={{ flexShrink: 0, marginTop: '2px' }} /> {error}
               </div>
             )}
           </div>
         )}
-
-        <style>{`
-          @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-          }
-        `}</style>
       </div>
 
-      {/* Expression Panel */}
+      {/* Expression Panel - Mobile Optimized */}
       {showExpressionPanel && currentVrm && (
         <div style={{
           position: 'absolute',
-          top: 10,
-          right: 10,
+          top: '16px',
+          right: '16px',
           zIndex: 100,
-          background: 'rgba(255, 255, 255, 0.95)',
-          padding: '15px',
-          borderRadius: '5px',
-          fontFamily: 'sans-serif',
-          maxWidth: '350px',
-          maxHeight: '80vh',
-          overflowY: 'auto'
+          background: 'hsl(240 3.7% 15.9%)',
+          border: '1px solid hsl(240 3.7% 15.9%)',
+          padding: '16px',
+          borderRadius: '12px',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          maxWidth: 'min(320px, calc(100vw - 32px))',
+          maxHeight: 'calc(100vh - 32px)',
+          overflowY: 'auto',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3)',
         }}>
-          <div style={{ fontWeight: 'bold', marginBottom: '15px', fontSize: '16px' }}>
-            🎭 Expression Controls
+          <div style={{ 
+            fontWeight: '600', 
+            marginBottom: '16px', 
+            fontSize: '14px',
+            color: 'hsl(210 40% 98%)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <Smile size={16} /> Expression Controls
           </div>
 
           {/* Expression Presets */}
-          <div style={{ marginBottom: '15px' }}>
-            <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>Quick Presets:</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '5px' }}>
-              {Object.keys(EXPRESSION_PRESETS).map((presetName) => (
-                <button
-                  key={presetName}
-                  onClick={() => applyExpressionPreset(presetName as keyof typeof EXPRESSION_PRESETS)}
-                  style={{
-                    padding: '8px 5px',
-                    cursor: 'pointer',
-                    background: '#2196F3',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '3px',
-                    fontSize: '11px',
-                    textTransform: 'capitalize'
-                  }}
-                >
-                  {presetName}
-                </button>
-              ))}
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ 
+              fontSize: '11px', 
+              color: 'hsl(240 5% 64.9%)', 
+              marginBottom: '8px',
+              fontWeight: '500'
+            }}>
+              Quick Presets
+            </div>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', 
+              gap: '6px' 
+            }}>
+              {Object.keys(EXPRESSION_PRESETS).map((presetName) => {
+                const IconMap: Record<string, any> = {
+                  happy: Smile,
+                  sad: Frown,
+                  neutral: Meh,
+                  angry: AlertCircle,
+                  surprised: AlertCircle,
+                  relaxed: Smile
+                };
+                const Icon = IconMap[presetName] || Smile;
+                
+                return (
+                  <button
+                    key={presetName}
+                    onClick={() => applyExpressionPreset(presetName as keyof typeof EXPRESSION_PRESETS)}
+                    style={{
+                      padding: '8px 10px',
+                      cursor: 'pointer',
+                      background: 'hsl(217.2 32.6% 17.5%)',
+                      color: 'hsl(210 40% 98%)',
+                      border: '1px solid hsl(217.2 32.6% 17.5%)',
+                      borderRadius: '8px',
+                      fontSize: '11px',
+                      fontWeight: '500',
+                      textTransform: 'capitalize',
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'hsl(217.2 32.6% 22%)';
+                      e.currentTarget.style.borderColor = 'hsl(217.2 32.6% 27%)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'hsl(217.2 32.6% 17.5%)';
+                      e.currentTarget.style.borderColor = 'hsl(217.2 32.6% 17.5%)';
+                    }}
+                  >
+                    <Icon size={12} />
+                    {presetName}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -650,22 +744,35 @@ setCurrentVrm(vrm);
             onClick={resetExpressions}
             style={{
               width: '100%',
-              padding: '8px',
-              marginBottom: '15px',
+              padding: '8px 12px',
+              marginBottom: '16px',
               cursor: 'pointer',
-              background: '#f44336',
-              color: 'white',
-              border: 'none',
-              borderRadius: '3px',
-              fontSize: '12px'
+              background: 'hsl(0 84.2% 60.2%)',
+              color: 'hsl(210 40% 98%)',
+              border: '1px solid hsl(0 84.2% 60.2%)',
+              borderRadius: '8px',
+              fontSize: '12px',
+              fontWeight: '600',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'hsl(0 84.2% 55%)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'hsl(0 84.2% 60.2%)';
             }}
           >
-            Reset All Expressions
+            Reset All
           </button>
 
           {/* Individual Expression Sliders */}
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
-            Manual Controls:
+          <div style={{ 
+            fontSize: '11px', 
+            color: 'hsl(240 5% 64.9%)', 
+            marginBottom: '12px',
+            fontWeight: '500'
+          }}>
+            Manual Controls
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {availableExpressions.map((expr) => (
@@ -673,11 +780,18 @@ setCurrentVrm(vrm);
                 <div style={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
-                  marginBottom: '3px',
-                  fontSize: '11px'
+                  marginBottom: '6px',
+                  fontSize: '11px',
+                  color: 'hsl(210 40% 98%)'
                 }}>
-                  <span style={{ fontWeight: 'bold' }}>{expr}</span>
-                  <span>{(expressionValues[expr] || 0).toFixed(2)}</span>
+                  <span style={{ fontWeight: '600' }}>{expr}</span>
+                  <span style={{ 
+                    color: 'hsl(240 5% 64.9%)',
+                    fontFamily: 'monospace',
+                    fontSize: '10px'
+                  }}>
+                    {(expressionValues[expr] || 0).toFixed(2)}
+                  </span>
                 </div>
                 <input
                   type="range"
@@ -686,15 +800,27 @@ setCurrentVrm(vrm);
                   step="0.01"
                   value={expressionValues[expr] || 0}
                   onChange={(e) => handleExpressionChange(expr, parseFloat(e.target.value))}
-                  style={{ width: '100%' }}
+                  style={{ 
+                    width: '100%',
+                    height: '6px',
+                    borderRadius: '3px',
+                    appearance: 'none',
+                    background: 'hsl(240 3.7% 20%)',
+                    outline: 'none',
+                  }}
                 />
               </div>
             ))}
           </div>
 
           {availableExpressions.length === 0 && (
-            <div style={{ color: '#999', fontSize: '12px', textAlign: 'center', padding: '20px' }}>
-              No expressions available for this model
+            <div style={{ 
+              color: 'hsl(240 5% 64.9%)', 
+              fontSize: '11px', 
+              textAlign: 'center', 
+              padding: '20px' 
+            }}>
+              No expressions available
             </div>
           )}
         </div>
@@ -720,10 +846,10 @@ setCurrentVrm(vrm);
       {/* 3D Canvas */}
       <Canvas 
         camera={{ 
-          position: isZoomedToFace ? [0.5, 1.4, 2.2] : [0.5, 1.2, 2.5], // Changed from [0, 1.5, 4]
+          position: isZoomedToFace ? [0.5, 1.4, 2.2] : [0.5, 1.2, 2.5],
           fov: 50 
         }}
-         shadows
+        shadows
         gl={{ 
           antialias: true,
           toneMapping: THREE.ACESFilmicToneMapping,
@@ -733,14 +859,65 @@ setCurrentVrm(vrm);
         <ApartmentScene />
         {currentVrm && <VrmModel vrm={currentVrm} />}
         <OrbitControls 
-           target={isZoomedToFace ? [0.5, 1.4, 1.5] : [0.5, 1.0, 1.5]} // Changed from [0, 1, 0]
-           maxDistance={isZoomedToFace ? 2 : 4} // Changed from 8
-           minDistance={isZoomedToFace ? 0.5 : 1.5} // Changed to prevent getting too close
-           maxPolarAngle={Math.PI / 1.8}
-           enablePan={!isZoomedToFace}
-         />
+          target={isZoomedToFace ? [0.5, 1.4, 1.5] : [0.5, 1.0, 1.5]}
+          maxDistance={isZoomedToFace ? 2 : 4}
+          minDistance={isZoomedToFace ? 0.5 : 1.5}
+          maxPolarAngle={Math.PI / 1.8}
+          enablePan={!isZoomedToFace}
+        />
         <AnimationManager vrmRef={{ current: currentVrm }} mixerRef={mixer} />
       </Canvas>
+
+      <style>{`
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateX(-10px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        /* Custom range slider styling */
+        input[type="range"]::-webkit-slider-thumb {
+          appearance: none;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: hsl(210 40% 98%);
+          cursor: pointer;
+          border: 2px solid hsl(217.2 32.6% 17.5%);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: hsl(210 40% 98%);
+          cursor: pointer;
+          border: 2px solid hsl(217.2 32.6% 17.5%);
+        }
+
+        /* Scrollbar styling */
+        div::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        div::-webkit-scrollbar-track {
+          background: hsl(240 3.7% 15.9%);
+          border-radius: 4px;
+        }
+
+        div::-webkit-scrollbar-thumb {
+          background: hsl(240 5% 26%);
+          border-radius: 4px;
+        }
+
+        div::-webkit-scrollbar-thumb:hover {
+          background: hsl(240 5% 34%);
+        }
+      `}</style>
     </div>
   );
 };
